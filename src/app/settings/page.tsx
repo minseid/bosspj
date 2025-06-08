@@ -10,7 +10,7 @@ import Image from "next/image";
 
 export default function SettingsPage() {
   const router = useRouter();
-  const { user, nickname, profileImageUrl, loading: authLoading, setUser } = useAuth();
+  const { user, nickname, profileImageUrl, loading: authLoading, setUser, logout } = useAuth();
 
   const [currentNickname, setCurrentNickname] = useState(nickname || "");
   const [newProfileImage, setNewProfileImage] = useState<File | null>(null);
@@ -81,6 +81,16 @@ export default function SettingsPage() {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push("/login");
+    } catch (err) {
+      console.error("로그아웃 중 오류 발생:", err);
+      setError("로그아웃 중 오류가 발생했습니다.");
+    }
+  };
+
   if (authLoading || loading) {
     return <div className="flex justify-center items-center min-h-screen">로딩 중...</div>;
   }
@@ -145,6 +155,16 @@ export default function SettingsPage() {
               </button>
             </div>
           </form>
+
+          <div className="mt-8 pt-6 border-t border-gray-200">
+            <h2 className="text-xl font-bold mb-4">계정 관리</h2>
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg transition-colors"
+            >
+              로그아웃
+            </button>
+          </div>
         </div>
       </main>
     </ProtectedLayout>
