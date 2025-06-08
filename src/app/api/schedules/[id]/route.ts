@@ -2,19 +2,27 @@ import { NextResponse } from "next/server";
 import { adminDb } from "@/lib/firebase-admin";
 import * as admin from 'firebase-admin';
 
-export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
-    const { id } = await params;
+    const { id } = params;
 
     if (!id) {
-      return NextResponse.json({ error: "일정 ID가 필요합니다." }, { status: 400 });
+      return NextResponse.json(
+        { error: '일정 ID가 필요합니다.' },
+        { status: 400 }
+      );
     }
 
-    const scheduleRef = adminDb.collection("schedules").doc(id);
-    const scheduleDoc = await scheduleRef.get();
+    const scheduleDoc = await adminDb
+      .collection('schedules')
+      .doc(id)
+      .get();
 
     if (!scheduleDoc.exists) {
-      return NextResponse.json({ error: "일정을 찾을 수 없습니다." }, { status: 404 });
+      return NextResponse.json(
+        { error: '일정을 찾을 수 없습니다.' },
+        { status: 404 }
+      );
     }
 
     const scheduleData = scheduleDoc.data();
@@ -39,9 +47,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       participants: participantDetails
     });
   } catch (error) {
-    console.error("Error fetching schedule:", error);
+    console.error('일정 조회 중 오류 발생:', error);
     return NextResponse.json(
-      { error: "일정을 불러오는 중 오류가 발생했습니다." },
+      { error: '일정 조회 중 오류가 발생했습니다.' },
       { status: 500 }
     );
   }
