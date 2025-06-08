@@ -68,7 +68,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
             return NextResponse.json({ error: "일정을 찾을 수 없습니다." }, { status: 404 });
         }
 
-        let updateData: { participants?: any };
+        let updateData: { participants?: admin.firestore.FieldValue };
 
         if (action === 'join') {
             updateData = {
