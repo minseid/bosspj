@@ -17,16 +17,25 @@ interface Schedule {
   participants: { uid: string; nickname: string }[];
 }
 
-export default function BossDetailPage({ params }: { params: { id: string } }) {
+export default function BossDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const { user, loading: authLoading, nickname } = useAuth();
-  const { id } = params;
+  const [id, setId] = useState<string>("");
   const [schedule, setSchedule] = useState<Schedule | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // params를 Promise로 처리
   useEffect(() => {
-    if (authLoading) return;
+    const getParams = async () => {
+      const resolvedParams = await params;
+      setId(resolvedParams.id);
+    };
+    getParams();
+  }, [params]);
+
+  useEffect(() => {
+    if (authLoading || !id) return;
     if (!user) {
       router.push("/login");
       return;
@@ -113,7 +122,7 @@ export default function BossDetailPage({ params }: { params: { id: string } }) {
     }
   };
 
-  if (authLoading || loading) {
+  if (authLoading || loading || !id) {
     return <div className="flex justify-center items-center min-h-screen">로딩 중...</div>;
   }
 
@@ -190,4 +199,4 @@ export default function BossDetailPage({ params }: { params: { id: string } }) {
       </main>
     </ProtectedLayout>
   );
-} 
+}

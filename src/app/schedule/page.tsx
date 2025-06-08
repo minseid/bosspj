@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import ProtectedLayout from "@/components/ProtectedLayout";
 import { useAuth } from "@/context/AuthContext";
@@ -25,7 +25,7 @@ export default function SchedulePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const fetchSchedules = async () => {
+  const fetchSchedules = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -41,7 +41,7 @@ export default function SchedulePage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -51,7 +51,7 @@ export default function SchedulePage() {
     }
 
     fetchSchedules();
-  }, [user, authLoading, router]);
+  }, [user, authLoading, router, fetchSchedules]);
 
   if (authLoading || loading) {
     return <div className="flex justify-center items-center min-h-screen">로딩 중...</div>;
@@ -120,4 +120,4 @@ export default function SchedulePage() {
       </div>
     </ProtectedLayout>
   );
-} 
+}

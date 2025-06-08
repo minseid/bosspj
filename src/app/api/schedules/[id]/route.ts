@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 import { adminDb } from "@/lib/firebase-admin";
 import * as admin from 'firebase-admin';
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = params.id;
+    const { id } = await params;
 
     if (!id) {
       return NextResponse.json({ error: "일정 ID가 필요합니다." }, { status: 400 });
@@ -47,9 +47,9 @@ export async function GET(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const id = params.id;
+        const { id } = await params;
         const body = await request.json();
         const { action, userId } = body; // action will be 'join' or 'leave'
 
@@ -94,9 +94,9 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = params.id;
+    const { id } = await params;
     const body = await request.json();
     const { userId } = body;
 
@@ -129,4 +129,4 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
       { status: 500 }
     );
   }
-} 
+}
